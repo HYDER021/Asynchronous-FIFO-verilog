@@ -1,82 +1,83 @@
-\# Asynchronous FIFO Design using Verilog HDL
-
-
+# Asynchronous FIFO Design using Verilog HDL
 
 A 16×8 asynchronous FIFO designed and functionally verified using Verilog HDL and Xilinx Vivado.
 
+## What is an Asynchronous FIFO?
 
+An asynchronous FIFO is used to safely transfer data between two different clock domains.
 
-\## Overview
+In this project:
 
+- Data is written using a **write clock**
+- Data is read using a **read clock**
+- The two clocks can operate at different frequencies
+- Gray-coded pointers are used for safe clock-domain crossing
+- Synchronizers are used to transfer pointer information between clock domains
 
-
-This project implements an asynchronous FIFO for transferring data between two independent clock domains.
-
-
-
-The design uses:
-
-
-
-\- Separate read and write clock domains
-
-\- Binary read/write pointers
-
-\- Gray-coded pointers for clock-domain crossing
-
-\- Two-stage synchronizers for CDC
-
-\- Full and empty flag generation
-
-\- Overflow and underflow protection
-
-\- Pointer and memory wraparound handling
-
-
-
-\## FIFO Specifications
-
-
+## FIFO Specifications
 
 | Parameter | Value |
-
-|---|---|
-
+|-----------|-------|
 | Data Width | 8 bits |
-
 | FIFO Depth | 16 |
-
-| Address Width | 4 bits |
-
-| Design Type | Asynchronous FIFO |
-
+| Write Clock | Independent |
+| Read Clock | Independent |
 | HDL | Verilog |
+| Simulation Tool | Xilinx Vivado 2024.1 |
 
-| Tool | Xilinx Vivado |
+## Design Features
 
+- Separate read and write clock domains
+- Binary read/write pointers
+- Binary-to-Gray code conversion
+- Clock-domain crossing using synchronizers
+- `FULL` flag generation
+- `EMPTY` flag generation
+- Overflow protection
+- Underflow protection
+- FIFO pointer wraparound
+- Correct data ordering during read/write operations
 
-
-\## Project Structure
-
-
+## Design Structure
 
 ```text
+                WRITE CLOCK DOMAIN
+                       |
+                       v
+              +------------------+
+              | Write Controller |
+              +------------------+
+                       |
+                Write Pointer
+                       |
+                  Gray Pointer
+                       |
+                       v
+                +-------------+
+                | Synchronizer|
+                +-------------+
+                       |
+                       v
 
-├── async\_fifo.v
-
-├── fifo\_mem.v
-
-├── fifo\_write\_ctrl.v
-
-├── fifo\_read\_ctrl.v
-
-├── gray\_sync.v
-
-├── tb\_async\_fifo.v
-
-├── async\_fifo.v.xpr
-
-├── .gitignore
-
-└── README.md
-
+                 +-----------+
+                 | FIFO RAM  |
+                 |   16 × 8  |
+                 +-----------+
+                       ^
+                       |
+                Read Pointer
+                       |
+                  Gray Pointer
+                       |
+                       v
+                +-------------+
+                | Synchronizer|
+                +-------------+
+                       ^
+                       |
+              +------------------+
+              |  Read Controller |
+              +------------------+
+                       ^
+                       |
+                  READ CLOCK DOMAIN
